@@ -11,7 +11,8 @@
 # EVA Assistente Virtual
 
 Eva é uma assistente virtual por comandos de voz em lingua portuguesa, no caso com sotaque brasileiro
-e de código aberto. Eva é baseada no assistente virtual Mycroft (em língua inglesa), tentando ser o mais compatível possível com este.  
+e de código aberto. Eva é baseada no assistente virtual Mycroft (em língua inglesa), procurando manter a compatibilidade com este último.  
+
 ## Índice
 
 -[Introdução](#introdução)
