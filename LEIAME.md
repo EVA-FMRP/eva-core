@@ -21,9 +21,9 @@ e de código aberto. Eva é baseada no assistente virtual Mycroft (em língua in
    * [Habilidades](#habilidades)
 - [Rodando no background](#Rodando-no-background)
    * [Informações de emparelhamento](#informações-de-emparelhamento)
-   * [Configuração] (#configuração)
+   * [Configuração](#Configuração)
    * [Usando EVA somente local](#Usando-EVA-somente-local)
-   * [API Key Services] (#api-key-services)
+   * [Chaves API de serviços](#api-key-services)
    * [Usando EVA por meio de um proxy](#[Usando-EVA-por-meio-de-um-proxy)
      + [Usando Mycroft atrás de um proxy sem autenticação] (# using-mycroft-behind-a-proxy-sem-autenticação)
      + [Usando Mycroft atrás de um proxy autenticado] (# using-mycroft-behind-an-authenticated-proxy)
@@ -35,8 +35,8 @@ e de código aberto. Eva é baseada no assistente virtual Mycroft (em língua in
 Primeiro, baixe o código em seu sistema! O método mais simples é via git ([instruções de instalação do git] (https://gist.github.com/derhuerst/1b15ff4652a867391f03)), 
 Digite no terminal:
 - `cd ~ /`
-- `git clone https://github.com/EVA-FMRP/mycroft-core.git`
-- `cd mycroft-core`
+- `git clone https://github.com/EVA-FMRP/eva-core.git`
+- `cd eva-core`
 - `bash dev_setup.sh`
 
 
@@ -67,9 +67,9 @@ Por padrão, mycroft-core é configurado para usar Home. Ao dizer "Ei, Mycroft, 
 
 Uma vez emparelhado, sua unidade usará as chaves de API do Mycroft para serviços como Speech-to-Text (STT), clima e várias outras habilidades.
 
-### Funcionalidades
+### Habilidades
 
-Eva não é nada sem habilidades. Existem várias habilidades padrão que são baixadas automaticamente para o diretório `/opt/mycroft/skills`, mas a maioria precisa ser instalada explicitamente. Veja o [Skill Repo] (https://github.com/EVA-FMRP/funcionalidades#SejaBemVindo) para descobrir funcionalidades feitas por outros colaboradores. Por favor, compartilhe seu próprio trabalho!
+Eva não é nada sem habilidades. Existem várias habilidades padrão que são baixadas automaticamente para o diretório `/opt/mycroft/skills`, mas a maioria precisa ser instalada explicitamente. Veja o [Skill Repo] (https://github.com/EVA-FMRP/habilidades#SejaBemVindo) para descobrir funcionalidades feitas por outros colaboradores. Por favor, compartilhe seu próprio trabalho!
 
 ## Rodando no background
 
