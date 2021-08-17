@@ -17,7 +17,7 @@
 
 # Set a default locale to handle output from commands reliably
 export LANG=C.UTF-8
-export LANGUAGE=en
+export LANGUAGE=pt
 
 # exit on any error
 set -Ee
@@ -27,13 +27,13 @@ TOP=$(pwd -L)
 
 function clean_mycroft_files() {
     echo '
-This will completely remove any files installed by mycroft (including pairing
-information).
-Do you wish to continue? (y/n)'
+Isso removerá completamente todos os arquivos instalados pelo mycroft (incluindo o emparelhamento
+em formação).
+Você deseja continuar? (s/n)'
     while true; do
         read -N1 -s key
         case $key in
-        [Yy])
+        [Ss])
             sudo rm -rf /var/log/mycroft
             rm -f /var/tmp/mycroft_web_cache.json
             rm -rf "${TMPDIR:-/tmp}/mycroft"
@@ -51,17 +51,17 @@ Do you wish to continue? (y/n)'
 }
 function show_help() {
     echo '
-Usage: dev_setup.sh [options]
-Prepare your environment for running the mycroft-core services.
+Uso: dev_setup.sh [opções]
+Prepare seu ambiente para executar os serviços mycroft-core.
 
-Options:
-    --clean                 Remove files and folders created by this script
-    -h, --help              Show this message
-    -fm                     Force mimic build
-    -n, --no-error          Do not exit on error (use with caution)
-    -p arg, --python arg    Sets the python version to use
-    -r, --allow-root        Allow to be run as root (e.g. sudo)
-    -sm                     Skip mimic build
+Opções:
+     --clean 				Remove arquivos e pastas criados por este script
+     -h, --help 			Mostrar esta mensagem
+     -fm 					Forçar compilação de mímica
+     -n, --no-error 		Não sai em caso de erro (use com cuidado)
+     -p arg, --python arg 	Define a versão python a ser usada
+     -r, --allow-root 		Permitir a execução como root (por exemplo, sudo)
+     -sm 					Pular compilação de mímica
 '
 }
 
@@ -115,8 +115,8 @@ for var in "$@" ; do
 done
 
 if [[ $(id -u) -eq 0 && $opt_allowroot != true ]] ; then
-    echo 'This script should not be run as root or with sudo.'
-    echo 'If you really need to for this, rerun with --allow-root'
+    echo 'Este script não deve ser executado como root ou com sudo.'
+    echo 'Se você realmente precisar fazer isso, execute novamente com --allow-root'
     exit 1
 fi
 
@@ -131,18 +131,18 @@ if found_exe sudo ; then
 elif found_exe doas ; then
     SUDO=doas
 elif [[ $opt_allowroot != true ]]; then
-    echo 'This script requires "sudo" to install system packages. Please install it, then re-run this script.'
+    echo 'Este script requer "sudo" para instalar os pacotes do sistema. Instale-o e execute novamente este script.'
     exit 1
 fi
 
 
 function get_YN() {
-    # Loop until the user hits the Y or the N key
-    echo -e -n "Choice [${CYAN}Y${RESET}/${CYAN}N${RESET}]: "
+    # Faça um loop até que o usuário pressione a tecla S ou N
+    echo -e -n "Escolha [${CYAN}S${RESET}/${CYAN}N${RESET}]: "
     while true; do
         read -N1 -s key
         case $key in
-        [Yy])
+        [Ss])
             return 0
             ;;
         [Nn])
@@ -152,7 +152,7 @@ function get_YN() {
     done
 }
 
-# If tput is available and can handle multiple colors
+# Se tput estiver disponível e puder lidar com várias cores
 if found_exe tput ; then
     if [[ $(tput colors) != "-1" && -z $CI ]]; then
         GREEN=$(tput setaf 2)
@@ -164,44 +164,69 @@ if found_exe tput ; then
     fi
 fi
 
-# Run a setup wizard the very first time that guides the user through some decisions
+# Executa um assistente de configuração pela primeira vez que orienta o usuário em algumas decisões
 if [[ ! -f .dev_opts.json && -z $CI ]] ; then
     echo "
-$CYAN                    Welcome to Mycroft!  $RESET"
+$CYAN            Bem vindo ao a assistente Virtual EVA!  $RESET"
     sleep 0.5
     echo '
-This script is designed to make working with Mycroft easy.  During this
-first run of dev_setup we will ask you a few questions to help setup
-your environment.'
+Este script foi desenvolvido para facilitar o trabalho com Mycroft. 
+Durante esta primeira execução de dev_setup, 
+faremos algumas perguntas para ajudar a configurar seu ambiente.'
     sleep 0.5
+    # The AVX instruction set is an x86 construct
+    # ARM has a range of equivalents, unsure which are (un)supported by TF.
+    if ! grep -q avx /proc/cpuinfo && [[ ! $(uname -m) == 'arm'* ]]; then
+      echo "
+O Precise Wake Word Engine requer o conjunto de instruções AVX, 
+que não é compatível com sua CPU. Você quer voltar para o mecanismo PocketSphinx? 
+Os usuários avançados podem construir o mecanismo preciso com uma versão mais antiga do TensorFlow (v1.13) - se desejado -
+ e alterar use_precise para true em mycroft.conf.
+   Y) Sim, desejo usar o mecanismo PocketSphinx ou o meu próprio.
+   N) Não, pare a instalação."
+      if get_YN ; then
+        if [[ ! -f /etc/mycroft/mycroft.conf ]]; then
+          $SUDO mkdir -p /etc/mycroft
+          $SUDO touch /etc/mycroft/mycroft.conf
+          $SUDO bash -c 'echo "{ \"use_precise\": true }" > /etc/mycroft/mycroft.conf'
+        else
+          $SUDO bash -c 'jq ". + { \"use_precise\": true }" /etc/mycroft/mycroft.conf > tmp.mycroft.conf' 
+          $SUDO mv -f tmp.mycroft.conf /etc/mycroft/mycroft.conf
+        fi
+      else
+        echo -e "$HIGHLIGHT N - quit the installation $RESET"
+        exit 1
+      fi
+      echo
+    fi
     echo "
-Do you want to run on 'master' or against a dev branch?  Unless you are
-a developer modifying mycroft-core itself, you should run on the
-'master' branch.  It is updated bi-weekly with a stable release.
-  Y)es, run on the stable 'master' branch
-  N)o, I want to run unstable branches"
+Você quer rodar no nodo 'master' ou no modo dev (desenvolvimento)? 
+A menos que você seja um desenvolvedor modificando o próprio mycroft-core, você deve executar no
+ramo 'mestre'. Ele é atualizado duas vezes por semana com uma versão estável.
+   Y)Sim, execute no modo 'master' estável
+   N)Não, eu quero executar no modo instável"
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - using 'master' branch $RESET"
+        echo -e "$HIGHLIGHT Y - usando modo 'master' $RESET"
         branch=master
         git checkout ${branch}
     else
-        echo -e "$HIGHLIGHT N - using an unstable branch $RESET"
+        echo -e "$HIGHLIGHT N - usando o modo instavel $RESET"
         branch=dev
     fi
 
     sleep 0.5
     echo "
-Mycroft is actively developed and constantly evolving.  It is recommended
-that you update regularly.  Would you like to automatically update
-whenever launching Mycroft?  This is highly recommended, especially for
-those running against the 'master' branch.
-  Y)es, automatically check for updates
-  N)o, I will be responsible for keeping Mycroft updated."
+EVA é desenvolvida ativamente e em constante evolução. 
+É recomendado que você  a atualize regularmente. 
+Você gostaria de atualizar automaticamente sempre que iniciar a EVA? 
+Isso é altamente recomendado, especialmente para aqueles que executam no branch 'master'.
+   Sim, verifique automaticamente se há atualizações
+   Não, serei responsável por manter o EVA atualizado. "
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - update automatically $RESET"
+        echo -e "$HIGHLIGHT Y - alutalizar automaticamente $RESET"
         autoupdate=true
     else
-        echo -e "$HIGHLIGHT N - update manually using 'git pull' $RESET"
+        echo -e "$HIGHLIGHT N - atualizar manualmente utilizando 'git pull' $RESET"
         autoupdate=false
     fi
 
@@ -209,19 +234,18 @@ those running against the 'master' branch.
     if [[ $opt_forcemimicbuild == false && $opt_skipmimicbuild == false ]] ; then
         sleep 0.5
         echo '
-Mycroft uses its Mimic technology to speak to you.  Mimic can run both
-locally and from a server.  The local Mimic is more robotic, but always
-available regardless of network connectivity.  It will act as a fallback
-if unable to contact the Mimic server.
+EVA usa sua tecnologia Mimic para falar com você. 
+O Mimic pode ser executado localmente e a partir de um servidor. 
+O Mimic local é mais robótico, mas sempre disponível, independentemente da conectividade de rede. 
+Ele agirá como um fallback se não puder entrar em contato com o servidor do Mimic.
 
-However, building the local Mimic is time consuming -- it can take hours
-on slower machines.  This can be skipped, but Mycroft will be unable to
-talk if you lose network connectivity.  Would you like to build Mimic
-locally?'
+No entanto, construir o Mimic local é demorado - pode levar horas em máquinas mais lentas. 
+Isso pode ser ignorado, mas a EVA não conseguirá falar se você perder a conectividade de rede.
+Você gostaria de construir o Mimic localmente? '
         if get_YN ; then
-            echo -e "$HIGHLIGHT Y - Mimic will be built $RESET"
+            echo -e "$HIGHLIGHT Y - Mimic ser[a instalado $RESET"
         else
-            echo -e "$HIGHLIGHT N - skip Mimic build $RESET"
+            echo -e "$HIGHLIGHT N - Mimic nao sera instalado  $RESET"
             opt_skipmimicbuild=true
         fi
     fi
@@ -230,65 +254,65 @@ locally?'
     # Add mycroft-core/bin to the .bashrc PATH?
     sleep 0.5
     echo '
-There are several Mycroft helper commands in the bin folder.  These
-can be added to your system PATH, making it simpler to use Mycroft.
-Would you like this to be added to your PATH in the .profile?'
+Existem vários comandos auxiliares EVA na pasta bin. Esses
+pode ser adicionado ao PATH do seu sistema, tornando mais simples o uso do EVA.
+Deseja que isso seja adicionado ao seu PATH no .profile? '
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - Adding Mycroft commands to your PATH $RESET"
+        echo -e "$HIGHLIGHT Y - Adicionando comandos Mycroft ao seu PATH $RESET"
 
         if [[ ! -f ~/.profile_mycroft ]] ; then
             # Only add the following to the .profile if .profile_mycroft
             # doesn't exist, indicating this script has not been run before
             echo '' >> ~/.profile
-            echo '# include Mycroft commands' >> ~/.profile
+            echo '# Adicionando comandos EVA ao seu PATH' >> ~/.profile
             echo 'source ~/.profile_mycroft' >> ~/.profile
         fi
 
         echo "
-# WARNING: This file may be replaced in future, do not customize.
-# set path so it includes Mycroft utilities
+# AVISO: Este arquivo pode ser substituído no futuro, não o personalize.
+# definir o caminho para que inclua utilitários EVA 
 if [ -d \"${TOP}/bin\" ] ; then
     PATH=\"\$PATH:${TOP}/bin\"
 fi" > ~/.profile_mycroft
-        echo -e "Type ${CYAN}mycroft-help$RESET to see available commands."
+        echo -e "Digite ${CYAN}mycroft-help$RESET para ver os comamdos dispon[iveis."
     else
-        echo -e "$HIGHLIGHT N - PATH left unchanged $RESET"
+        echo -e "$HIGHLIGHT N - PATH deixar inalterado $RESET"
     fi
 
     # Create a link to the 'skills' folder.
     sleep 0.5
     echo
-    echo 'The standard location for Mycroft skills is under /opt/mycroft/skills.'
+    echo 'A localização padrão para habilidades de EVA esta em /opt/mycroft/skills.'
     if [[ ! -d /opt/mycroft/skills ]] ; then
-        echo 'This script will create that folder for you.  This requires sudo'
-        echo 'permission and might ask you for a password...'
+        echo 'Este script criará essa pasta para você. Isso requer permissao sudo'
+        echo 'permissão e pode pedir uma senha ...'
         setup_user=$USER
         setup_group=$(id -gn $USER)
         $SUDO mkdir -p /opt/mycroft/skills
         $SUDO chown -R ${setup_user}:${setup_group} /opt/mycroft
-        echo 'Created!'
+        echo 'Criado!'
     fi
     if [[ ! -d skills ]] ; then
         ln -s /opt/mycroft/skills skills
-        echo "For convenience, a soft link has been created called 'skills' which leads"
-        echo 'to /opt/mycroft/skills.'
+        echo "Por conveniência, um link simbólico foi criado chamado 'skills' que leva"
+        echo 'skills /opt/mycroft/skills.'
     fi
 
     # Add PEP8 pre-commit hook
     sleep 0.5
     echo '
-(Developer) Do you want to automatically check code-style when submitting code.
-If unsure answer yes.
+(Desenvolvedor) Você deseja verificar automaticamente o estilo do código ao enviar o código.
+Se não tiver certeza, responda yes (sim).
 '
     if get_YN ; then
-        echo 'Will install PEP8 pre-commit hook...'
+        echo 'Irá instalar pré-confirmação PEP8 ...'
         INSTALL_PRECOMMIT_HOOK=true
     fi
 
     # Save options
     echo '{"use_branch": "'$branch'", "auto_update": '$autoupdate'}' > .dev_opts.json
 
-    echo -e '\nInteractive portion complete, now installing dependencies...\n'
+    echo -e '\nParte interativa concluída, agora instalando dependências...\n'
     sleep 5
 fi
 
@@ -321,11 +345,11 @@ function debian_install() {
 
     if dpkg -V libjack-jackd2-0 > /dev/null 2>&1 && [[ -z ${CI} ]] ; then
         echo "
-We have detected that your computer has the libjack-jackd2-0 package installed.
-Mycroft requires a conflicting package, and will likely uninstall this package.
-On some systems, this can cause other programs to be marked for removal.
-Please review the following package changes carefully."
-        read -p "Press enter to continue"
+Detectamos que seu computador possui o pacote libjack-jackd2-0 instalado.
+EVA requer um pacote conflitante e provavelmente desinstalará este pacote. 
+Em alguns sistemas, isso pode fazer com que outros programas sejam marcados para remoção. 
+Por favor, revise as seguintes alterações no pacote com atenção."
+        read -p "Precione enter para continuar"
         $SUDO apt-get install $APT_PACKAGE_LIST
     else
         $SUDO apt-get install -y $APT_PACKAGE_LIST
@@ -380,45 +404,45 @@ function alpine_install() {
 }
 
 function install_deps() {
-    echo 'Installing packages...'
+    echo 'Instalando pacotes...'
     if found_exe zypper ; then
         # OpenSUSE
-        echo "$GREEN Installing packages for OpenSUSE...$RESET"
+        echo "$GREEN Instalando pacotes para OpenSUSE...$RESET"
         open_suse_install
     elif found_exe yum && os_is centos ; then
         # CentOS
-        echo "$GREEN Installing packages for Centos...$RESET"
+        echo "$GREEN Instalando pacotes para Centos...$RESET"
         centos_install
     elif found_exe yum && os_is rhel ; then
         # Redhat Enterprise Linux
-        echo "$GREEN Installing packages for Red Hat...$RESET"
+        echo "$GREEN Instalando pacotes para Red Hat...$RESET"
         redhat_install
     elif os_is_like debian || os_is debian || os_is_like ubuntu || os_is ubuntu || os_is linuxmint; then
         # Debian / Ubuntu / Mint
-        echo "$GREEN Installing packages for Debian/Ubuntu/Mint...$RESET"
+        echo "$GREEN Instalando pacotes para Debian/Ubuntu/Mint...$RESET"
         debian_install
     elif os_is_like fedora || os_is fedora; then
         # Fedora
-        echo "$GREEN Installing packages for Fedora...$RESET"
+        echo "$GREEN Instalando pacotes para Fedora...$RESET"
         fedora_install
     elif found_exe pacman && (os_is arch || os_is_like arch); then
         # Arch Linux
-        echo "$GREEN Installing packages for Arch...$RESET"
+        echo "$GREEN Instalando pacotes para Arch...$RESET"
         arch_install
     elif found_exe emerge && os_is gentoo; then
         # Gentoo Linux
-        echo "$GREEN Installing packages for Gentoo Linux ...$RESET"
+        echo "$GREEN Instalando pacotes para Gentoo Linux ...$RESET"
         gentoo_install
     elif found_exe apk && os_is alpine; then
         # Alpine Linux
-        echo "$GREEN Installing packages for Alpine Linux...$RESET"
+        echo "$GREEN Instalando pacotes para Alpine Linux...$RESET"
         alpine_install
     else
     	echo
-        echo -e "${YELLOW}Could not find package manager
-${YELLOW}Make sure to manually install:$BLUE git python3 python-setuptools python-venv pygobject libtool libffi libjpg openssl autoconf bison swig glib2.0 portaudio19 mpg123 flac curl fann g++ jq\n$RESET"
+        echo -e "${YELLOW}Não foi possível encontrar o gerenciador de pacotes
+${YELLOW}Certifique-se de instalar manualmente:$BLUE git python3 python-setuptools python-venv pygobject libtool libffi libjpg openssl autoconf bison swig glib2.0 portaudio19 mpg123 flac curl fann g++ jq\n$RESET"
 
-        echo 'Warning: Failed to install all dependencies. Continue? y/N'
+        echo 'Aviso: Falha ao instalar todas as dependências. Continuar? y/N'
         read -n1 continue
         if [[ $continue != 'y' ]] ; then
             exit 1
@@ -474,7 +498,7 @@ fi
 
 if [[ ! -x ${VIRTUALENV_ROOT}/bin/activate ]] ; then
     if ! install_venv ; then
-        echo 'Failed to set up virtualenv for mycroft, exiting setup.'
+        echo 'Falha ao configurar o virtualenv para EVA, saindo da configuração.'
         exit 1
     fi
 fi
@@ -507,7 +531,7 @@ if [[ ! -f $VENV_PATH_FILE ]] ; then
 fi
 
 if ! grep -q "$TOP" $VENV_PATH_FILE ; then
-    echo 'Adding mycroft-core to virtualenv path'
+    echo 'Adicionando mycroft-core para virtualenv path'
     sed -i.tmp '1 a\
 '"$TOP"'
 ' "$VENV_PATH_FILE"
@@ -515,7 +539,7 @@ fi
 
 # install required python modules
 if ! pip install -r requirements/requirements.txt ; then
-    echo 'Warning: Failed to install required dependencies. Continue? y/N'
+    echo 'Aviso: Falha ao instalar as dependências necessárias. Continuar? y/N'
     read -n1 continue
     if [[ $continue != 'y' ]] ; then
         exit 1
@@ -526,7 +550,7 @@ fi
 if [[ ! $(pip install -r requirements/extra-audiobackend.txt) ||
 	! $(pip install -r requirements/extra-stt.txt) ||
 	! $(pip install -r requirements/extra-mark1.txt) ]] ; then
-    echo 'Warning: Failed to install some optional dependencies. Continue? y/N'
+    echo 'Aviso: Falha ao instalar algumas dependências opcionais. Continuar? y/N'
     read -n1 continue
     if [[ $continue != 'y' ]] ; then
         exit 1
@@ -535,7 +559,7 @@ fi
 
 
 if ! pip install -r requirements/tests.txt ; then
-    echo "Warning: Test requirements failed to install. Note: normal operation should still work fine..."
+    echo "Aviso: os requisitos de teste não foram instalados. Nota: a operação normal ainda deve funcionar bem..."
 fi
 
 SYSMEM=$(free | awk '/^Mem:/ { print $2 }')
@@ -555,7 +579,7 @@ elif [[ $MAXCORES -lt $CORES ]] ; then
     CORES=$MAXCORES
 fi
 
-echo "Building with $CORES cores."
+echo "Construindo com  $CORES nucleos."
 
 #build and install pocketsphinx
 #build and install mimic
@@ -563,10 +587,10 @@ echo "Building with $CORES cores."
 cd "$TOP"
 
 if [[ $build_mimic == 'y' || $build_mimic == 'Y' ]] ; then
-    echo 'WARNING: The following can take a long time to run!'
+    echo 'AVISO: o comando seguinte pode levar muito tempo para ser executado!'
     "${TOP}/scripts/install-mimic.sh" " $CORES"
 else
-    echo 'Skipping mimic build.'
+    echo 'Ignorando a construção de mímica.'
 fi
 
 # set permissions for common scripts
@@ -585,7 +609,7 @@ chmod +x bin/mycroft-speak
 # create and set permissions for logging
 if [[ ! -w /var/log/mycroft/ ]] ; then
     # Creating and setting permissions
-    echo 'Creating /var/log/mycroft/ directory'
+    echo 'Criando diret[orio de log /var/log/mycroft/'
     if [[ ! -d /var/log/mycroft/ ]] ; then
         $SUDO mkdir /var/log/mycroft/
     fi
