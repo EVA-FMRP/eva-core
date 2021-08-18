@@ -13,7 +13,7 @@
 Eva é uma assistente virtual por comandos de voz em lingua portuguesa, no caso com sotaque brasileiro
 e de código aberto. Eva é baseada no assistente virtual Mycroft (em língua inglesa), procurando manter a compatibilidade com este último.
 Detalhes sobre o Projeto EVA podem ser vistos no portal www.eva.fmrp.usp.br, dessenvolvido pela equipe da professora Drª Gleici Perdoná - www.gleici.fmrp.usp.br  e a sua equipe de desenvolvedores. Tiago Chiaveri e Rafael Fázio
-empresa desenvolvedora: www.alicehuman.com.br
+empresa desenvolvedora: www.alicehuman.com
 
 ## Índice
 
