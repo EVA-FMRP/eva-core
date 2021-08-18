@@ -11,29 +11,27 @@
 # EVA Assistente Virtual
 
 Eva é uma assistente virtual por comandos de voz em lingua portuguesa, no caso com sotaque brasileiro
-e de código aberto. Eva é baseada no assistente virtual Mycroft (em língua inglesa), procurando manter a compatibilidade com este último.  
+e de código aberto. Eva é baseada no assistente virtual Mycroft (em língua inglesa), procurando manter a compatibilidade com este último.
+Detalhes sobre o Projeto EVA podem ser vistos no portal www.eva.fmrp.usp.br, dessenvolvido pela equipe da professora Drª Gleici Perdoná - www.gleici.fmrp.usp.br  e a sua equipe de desenvolvedores. Tiago Chiaveri e Rafael Fázio
+empresa desenvolvedora: www.alicehuman.com
 
 ## Índice
 
--[Introdução](#introdução)
--[Executando EVA](#executando-eva)
--[Usando EVA](#usando-eva)
-   *[*Home * Device and Account Manager](#home-device-and-account-manager)
+- [Introdução](#introdução)
+- [Executando EVA](#executando-eva)
+- [Usando EVA](#usando-eva)
    * [Habilidades](#habilidades)
-- [Rodando no background](#Rodando-no-background)
-   * [Informações de emparelhamento](#informações-de-emparelhamento)
-   * [Configuração](#Configuração)
-   * [Usando EVA somente local](#Usando-EVA-somente-local)
+- [Rodando no Plano de Fundo](#rodando-no-plano-de-fundo)
+   * [Configuração](#configuração)
+   * [Usando EVA somente local](#usando-eva-somente-local)
    * [Chaves API de serviços](#api-key-services)
-   * [Usando EVA por meio de um proxy](#[Usando-EVA-por-meio-de-um-proxy)
-     + [Usando Mycroft atrás de um proxy sem autenticação] (# using-mycroft-behind-a-proxy-sem-autenticação)
-     + [Usando Mycroft atrás de um proxy autenticado] (# using-mycroft-behind-an-authenticated-proxy)
-- [Envolvimento](#envolvimento)
+   * [Usando EVA por meio de um proxy](#[usando-eva-por-meio-de-um-proxy)
+- [Colabora](#colaborar)
 - [Links](#links)
 
 ## Introdução
 
-Primeiro, baixe o código em seu sistema! O método mais simples é via git ([instruções de instalação do git] (https://gist.github.com/derhuerst/1b15ff4652a867391f03)), 
+Primeiro, baixe o código em seu sistema! O método mais simples é via git.
 Digite no terminal:
 - `cd ~ /`
 - `git clone https://github.com/EVA-FMRP/eva-core.git`
@@ -51,7 +49,7 @@ NOTA: O modo padrão para este repositório é 'dev', que deve ser considerado u
 
 EVA fornece `start-mycroft.sh` para realizar tarefas comuns. Este script usa um virtualenv criado por `dev_setup.sh`. Supondo que você instalou mycroft-core em seu diretório inicial, execute:
 
-- `cd ~/mycroft-core`
+- `cd ~/eva-core`
 - `./start-mycroft.sh debug`
 
 O comando "debug" iniciará os serviços de segundo plano (ouvinte de microfone, habilidade, messagebus e subsistemas de áudio), bem como exibirá uma Interface de Linha de Comando (CLI) baseada em texto que você pode usar para interagir com Mycroft e ver o conteúdo do vários registros. Alternativamente, você pode executar `./start-mycroft.sh all` para iniciar os serviços sem a interface de linha de comando. Posteriormente, você pode ativar a CLI usando `./start-mycroft.sh cli`.
@@ -61,27 +59,16 @@ Os serviços de segundo plano podem ser interrompidos como um grupo com:
 
 ## Usando EVA
 
-### * Home * Device and Account Manager
-A Mycroft AI, Inc. mantém um sistema de gerenciamento de dispositivos e contas conhecido como Mycroft Home. Os desenvolvedores podem se inscrever em: https://home.mycroft.ai
-
-Por padrão, mycroft-core é configurado para usar Home. Ao dizer "Ei, Mycroft, emparelhe meu dispositivo" (ou qualquer outra solicitação verbal), você será informado de que seu dispositivo precisa ser emparelhado. O Mycroft falará um código de 6 dígitos que você pode inserir na página de emparelhamento no [site Mycroft Home] (https://home.mycroft.ai).
-
-Uma vez emparelhado, sua unidade usará as chaves de API do Mycroft para serviços como Speech-to-Text (STT), clima e várias outras habilidades.
-
 ### Habilidades
 
 Eva não é nada sem habilidades. Existem várias habilidades padrão que são baixadas automaticamente para o diretório `/opt/mycroft/skills`, mas a maioria precisa ser instalada explicitamente. Veja o [Skill Repo] (https://github.com/EVA-FMRP/habilidades#SejaBemVindo) para descobrir funcionalidades feitas por outros colaboradores. Por favor, compartilhe seu próprio trabalho!
 
-## Rodando no background
-
-### Informações de emparelhamento
-As informações de emparelhamento geradas pelo registro no Home são armazenadas em:
-`~ /.config/mycroft/identity/identity2.json` <b> <- NÃO COMPARTILHE ISTO COM OUTROS! </b>
+## Rodando no Plano de Fundo
 
 ### Configuração
 A configuração do Mycroft consiste em 4 localizações possíveis:
-- `mycroft-core/mycroft/configuration/mycroft.conf` (padrão)
-- [Mycroft Home] (https://home.mycroft.ai) (Remoto)
+- `eva-core/mycroft/configuration/mycroft.conf` (padrão)
+- [EVA Home] (https://home.mycroft.ai) (Remoto)
 - `/etc/mycroft/mycroft.conf` (Sistema Operacional)
 - `$XDG_CONFIG_DIR/mycroft/mycroft.conf` (que é por padrão` $HOME/.config/mycroft/mycroft.conf`) (USUÁRIO)
 
@@ -104,7 +91,7 @@ Se você não deseja usar o serviço Mycroft Home, antes de iniciar o Mycroft pe
 
 ### Serviços principais de API
 
-O back-end Mycroft fornece acesso a uma variedade de chaves de API para serviços específicos. Sem emparelhar com o backend Mycroft, você precisará adicionar suas próprias chaves de API, instalar uma habilidade ou plug-in diferente para executar essa função ou não terá acesso a essa funcionalidade.
+O back-end EVA fornece acesso a uma variedade de chaves de API para serviços específicos. Sem emparelhar com o backend EVA-Mycroft, você precisará adicionar suas próprias chaves de API, instalar uma habilidade ou plug-in diferente para executar essa função ou não terá acesso a essa funcionalidade.
 
 Estas são as chaves usadas atualmente no Mycroft Core por meio do backend Mycroft:
 
@@ -121,6 +108,14 @@ Muitas escolas, universidades e locais de trabalho executam um `proxy` em sua re
 Se você planeja usar o Mycroft por trás de um proxy, precisará executar uma etapa de configuração adicional.
 
 _NOTA: Para completar este passo, você precisará saber o `hostname` e a` porta` do servidor proxy. Seu administrador de rede poderá fornecer esses detalhes
+
+## Colaborar
+
+Este é um projeto open source. Nós adoraríamos sua ajuda. Preparamos um guia de contribuição para ajudá-lo a começar.
+Envolver-se
+
+Este é um projeto open source. Esteja a vontade para modificar e colaborar com o projeto.
+
 
  ## Links
 * [Creating a Skill](https://mycroft-ai.gitbook.io/docs/skill-development/your-first-skill)
