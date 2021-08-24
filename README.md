@@ -130,3 +130,5 @@ Este é um projeto open source. Esteja a vontade para modificar e colaborar com 
 rm -rf ~/.mycroft
 sudo rm -rf /opt/mycroft
 rm -rf mycroft-core
+sudo rm -rf /etc/mycroft/mycroft.conf
+
