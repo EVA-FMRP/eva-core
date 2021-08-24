@@ -125,3 +125,8 @@ Este é um projeto open source. Esteja a vontade para modificar e colaborar com 
 * [Mycroft Chat](https://chat.mycroft.ai)
 * [Mycroft Forum](https://community.mycroft.ai)
 * [Mycroft Blog](https://mycroft.ai/blog)
+
+### Removendo a EVA
+rm -rf ~/.mycroft
+sudo rm -rf /opt/mycroft
+rm -rf mycroft-core
