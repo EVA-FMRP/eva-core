@@ -206,7 +206,7 @@ ramo 'mestre'. Ele é atualizado duas vezes por semana com uma versão estável.
    S) Sim, execute no modo 'master' estável
    N) Não, eu quero executar no modo instável"
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - usando modo 'master' $RESET"
+        echo -e "$HIGHLIGHT S - usando modo 'master' $RESET"
         branch=master
         git checkout ${branch}
     else
@@ -223,7 +223,7 @@ Isso é altamente recomendado, especialmente para aqueles que executam no branch
    Sim, verifique automaticamente se há atualizações
    Não, serei responsável por manter o EVA atualizado. "
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - alutalizar automaticamente $RESET"
+        echo -e "$HIGHLIGHT S - alutalizar automaticamente $RESET"
         autoupdate=true
     else
         echo -e "$HIGHLIGHT N - atualizar manualmente utilizando 'git pull' $RESET"
@@ -234,18 +234,19 @@ Isso é altamente recomendado, especialmente para aqueles que executam no branch
     if [[ $opt_forcemimicbuild == false && $opt_skipmimicbuild == false ]] ; then
         sleep 0.5
         echo '
-EVA usa sua tecnologia Mimic para falar com você. 
+EVA pode usar a tecnologia Mimic para falar com você. 
 O Mimic pode ser executado localmente e a partir de um servidor. 
 O Mimic local é mais robótico, mas sempre disponível, independentemente da conectividade de rede. 
 Ele agirá como um fallback se não puder entrar em contato com o servidor do Mimic.
 
 No entanto, construir o Mimic local é demorado - pode levar horas em máquinas mais lentas. 
 Isso pode ser ignorado, mas a EVA não conseguirá falar se você perder a conectividade de rede.
-Você gostaria de construir o Mimic localmente? '
+Mas se você instalou o pacote espeak mbrola, o mimic não é necessário. 
+Você gostaria de construir o Mimic localmente? recomendamos que escolha não [N]'
         if get_YN ; then
-            echo -e "$HIGHLIGHT Y - Mimic ser[a instalado $RESET"
+            echo -e "$HIGHLIGHT S - Mimic será instalado $RESET"
         else
-            echo -e "$HIGHLIGHT N - Mimic nao sera instalado  $RESET"
+            echo -e "$HIGHLIGHT N - Mimic não será instalado  $RESET"
             opt_skipmimicbuild=true
         fi
     fi
@@ -258,7 +259,7 @@ Existem vários comandos auxiliares EVA na pasta bin. Esses
 pode ser adicionado ao PATH do seu sistema, tornando mais simples o uso do EVA.
 Deseja que isso seja adicionado ao seu PATH no .profile? '
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - Adicionando comandos Mycroft ao seu PATH $RESET"
+        echo -e "$HIGHLIGHT S - Adicionando comandos Mycroft ao seu PATH $RESET"
 
         if [[ ! -f ~/.profile_mycroft ]] ; then
             # Only add the following to the .profile if .profile_mycroft
@@ -274,7 +275,7 @@ Deseja que isso seja adicionado ao seu PATH no .profile? '
 if [ -d \"${TOP}/bin\" ] ; then
     PATH=\"\$PATH:${TOP}/bin\"
 fi" > ~/.profile_mycroft
-        echo -e "Digite ${CYAN}mycroft-help$RESET para ver os comamdos dispon[iveis."
+        echo -e "Digite ${CYAN}mycroft-help$RESET para ver os comamdos disponíveis."
     else
         echo -e "$HIGHLIGHT N - PATH deixar inalterado $RESET"
     fi
@@ -284,7 +285,7 @@ fi" > ~/.profile_mycroft
     echo
     echo 'A localização padrão para habilidades de EVA esta em /opt/mycroft/skills.'
     if [[ ! -d /opt/mycroft/skills ]] ; then
-        echo 'Este script criará essa pasta para você. Isso requer permissao sudo'
+        echo 'Este script criará essa pasta para você. Isso requer permissão sudo'
         echo 'permissão e pode pedir uma senha ...'
         setup_user=$USER
         setup_group=$(id -gn $USER)
@@ -294,7 +295,7 @@ fi" > ~/.profile_mycroft
     fi
     if [[ ! -d skills ]] ; then
         ln -s /opt/mycroft/skills skills
-        echo "Por conveniência, um link simbólico foi criado chamado 'skills' que leva"
+        echo "Por conveniência, um link simbólico foi criado chamado 'skills'"
         echo 'skills /opt/mycroft/skills.'
     fi
 
