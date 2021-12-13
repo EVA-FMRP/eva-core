@@ -182,29 +182,29 @@ O Precise Wake Word Engine requer o conjunto de instruções AVX,
 que não é compatível com sua CPU. Você quer voltar para o mecanismo PocketSphinx? 
 Os usuários avançados podem construir o mecanismo preciso com uma versão mais antiga do TensorFlow (v1.13) - se desejado -
  e alterar use_precise para true em mycroft.conf.
-   Y) Sim, desejo usar o mecanismo PocketSphinx ou o meu próprio.
+   S) Sim, desejo usar o mecanismo PocketSphinx ou o meu próprio.
    N) Não, pare a instalação."
-      if get_YN ; then
-        if [[ ! -f /etc/mycroft/mycroft.conf ]]; then
-          $SUDO mkdir -p /etc/mycroft
-          $SUDO touch /etc/mycroft/mycroft.conf
-          $SUDO bash -c 'echo "{ \"use_precise\": true }" > /etc/mycroft/mycroft.conf'
+        if get_YN ; then
+            if [[ ! -f /etc/mycroft/mycroft.conf ]]; then
+                $SUDO mkdir -p /etc/mycroft
+                $SUDO touch /etc/mycroft/mycroft.conf
+                $SUDO bash -c 'echo "{ \"use_precise\": false }" > /etc/mycroft/mycroft.conf'
+            else
+                # Ensure dependency installed to merge configs
+                disable_precise_later=true
+            fi
         else
-          $SUDO bash -c 'jq ". + { \"use_precise\": true }" /etc/mycroft/mycroft.conf > tmp.mycroft.conf' 
-          $SUDO mv -f tmp.mycroft.conf /etc/mycroft/mycroft.conf
+            echo -e "$HIGHLIGHT N - quit the installation $RESET"
+            exit 1
         fi
-      else
-        echo -e "$HIGHLIGHT N - quit the installation $RESET"
-        exit 1
-      fi
-      echo
+        echo
     fi
     echo "
 Você quer rodar no nodo 'master' ou no modo dev (desenvolvimento)? 
 A menos que você seja um desenvolvedor modificando o próprio mycroft-core, você deve executar no
 ramo 'mestre'. Ele é atualizado duas vezes por semana com uma versão estável.
-   Y)Sim, execute no modo 'master' estável
-   N)Não, eu quero executar no modo instável"
+   S) Sim, execute no modo 'master' estável
+   N) Não, eu quero executar no modo instável"
     if get_YN ; then
         echo -e "$HIGHLIGHT Y - usando modo 'master' $RESET"
         branch=master
