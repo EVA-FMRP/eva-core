@@ -206,7 +206,7 @@ ramo 'mestre'. Ele é atualizado duas vezes por semana com uma versão estável.
    S) Sim, execute no modo 'master' estável
    N) Não, eu quero executar no modo instável"
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - usando modo 'master' $RESET"
+        echo -e "$HIGHLIGHT S - usando modo 'master' $RESET"
         branch=master
         git checkout ${branch}
     else
@@ -223,7 +223,7 @@ Isso é altamente recomendado, especialmente para aqueles que executam no branch
    Sim, verifique automaticamente se há atualizações
    Não, serei responsável por manter o EVA atualizado. "
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - alutalizar automaticamente $RESET"
+        echo -e "$HIGHLIGHT S - alutalizar automaticamente $RESET"
         autoupdate=true
     else
         echo -e "$HIGHLIGHT N - atualizar manualmente utilizando 'git pull' $RESET"
@@ -243,7 +243,7 @@ No entanto, construir o Mimic local é demorado - pode levar horas em máquinas 
 Isso pode ser ignorado, mas a EVA não conseguirá falar se você perder a conectividade de rede.
 Você gostaria de construir o Mimic localmente? '
         if get_YN ; then
-            echo -e "$HIGHLIGHT Y - Mimic ser[a instalado $RESET"
+            echo -e "$HIGHLIGHT S - Mimic ser[a instalado $RESET"
         else
             echo -e "$HIGHLIGHT N - Mimic nao sera instalado  $RESET"
             opt_skipmimicbuild=true
@@ -258,7 +258,7 @@ Existem vários comandos auxiliares EVA na pasta bin. Esses
 pode ser adicionado ao PATH do seu sistema, tornando mais simples o uso do EVA.
 Deseja que isso seja adicionado ao seu PATH no .profile? '
     if get_YN ; then
-        echo -e "$HIGHLIGHT Y - Adicionando comandos Mycroft ao seu PATH $RESET"
+        echo -e "$HIGHLIGHT S - Adicionando comandos Mycroft ao seu PATH $RESET"
 
         if [[ ! -f ~/.profile_mycroft ]] ; then
             # Only add the following to the .profile if .profile_mycroft
